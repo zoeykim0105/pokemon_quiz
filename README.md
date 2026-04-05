@@ -30,18 +30,18 @@
 </head>
 <body>
 
-<h1>포켓몬 세대별 암기</h1>
+<h1>포켓몬 암기 (순서 + 복습)</h1>
 
-<select id="gen" onchange="newPokemon()">
-  <option value="1">1세대 (1~151)</option>
-  <option value="2">2세대 (152~251)</option>
-  <option value="3">3세대 (252~386)</option>
-  <option value="4">4세대 (387~493)</option>
-  <option value="5">5세대 (494~649)</option>
-  <option value="6">6세대 (650~721)</option>
-  <option value="7">7세대 (722~809)</option>
-  <option value="8">8세대 (810~905)</option>
-  <option value="9">9세대 (906~1010)</option>
+<select id="gen" onchange="startGame()">
+  <option value="1">1세대</option>
+  <option value="2">2세대</option>
+  <option value="3">3세대</option>
+  <option value="4">4세대</option>
+  <option value="5">5세대</option>
+  <option value="6">6세대</option>
+  <option value="7">7세대</option>
+  <option value="8">8세대</option>
+  <option value="9">9세대</option>
 </select>
 
 <br>
@@ -49,20 +49,14 @@
 <img id="img">
 <br>
 
-<!-- 🔥 모바일 엔터까지 해결된 입력창 -->
 <form onsubmit="submitAnswer(event)">
-  <input id="answer" placeholder="이름 입력" onkeydown="handleKey(event)" autofocus>
+  <input id="answer" placeholder="이름 입력" autofocus>
 </form>
 
-<br>
-
-<button onclick="check()">확인</button>
-
 <p id="result"></p>
+<p id="progress"></p>
 
 <script>
-let currentId;
-
 const genRange = {
   1: [1,151],
   2: [152,251],
@@ -75,39 +69,55 @@ const genRange = {
   9: [906,1010]
 };
 
-function getRandomId() {
+let list = [];
+let wrong = [];
+let index = 0;
+let currentId;
+
+function startGame() {
   const gen = document.getElementById("gen").value;
   const [min, max] = genRange[gen];
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+
+  list = [];
+  for(let i=min; i<=max; i++) list.push(i);
+
+  wrong = [];
+  index = 0;
+
+  next();
 }
 
-function newPokemon() {
-  currentId = getRandomId();
+function next() {
+  if(index >= list.length) {
+    if(wrong.length > 0) {
+      list = [...wrong];
+      wrong = [];
+      index = 0;
+      alert("오답 복습 시작!");
+    } else {
+      document.getElementById("result").innerText = "🎉 다 외웠다!";
+      return;
+    }
+  }
+
+  currentId = list[index];
 
   document.getElementById("img").src =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + currentId + ".png";
 
   document.getElementById("answer").value = "";
   document.getElementById("result").innerText = "";
+  document.getElementById("progress").innerText =
+    (index+1) + " / " + list.length;
 
-  // 🔥 다음 문제 때 자동 커서
   document.getElementById("answer").focus();
 }
 
-// 🔥 컴퓨터 엔터
-function handleKey(e) {
-  if (e.key === "Enter") {
-    check();
-  }
-}
-
-// 🔥 모바일 엔터 (핵심)
 function submitAnswer(e) {
   e.preventDefault();
   check();
 }
 
-// 한글 이름 가져오기
 async function getKoreanName(id) {
   const res = await fetch("https://pokeapi.co/api/v2/pokemon-species/" + id);
   const data = await res.json();
@@ -123,12 +133,15 @@ async function check() {
     document.getElementById("result").innerText = "정답!";
   } else {
     document.getElementById("result").innerText = "정답: " + correct;
+    wrong.push(currentId);
   }
 
-  setTimeout(newPokemon, 1200);
+  index++;
+  setTimeout(next, 800);
 }
 
-newPokemon();
+// 처음 시작
+startGame();
 </script>
 
 </body>
