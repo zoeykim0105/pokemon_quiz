@@ -17,11 +17,6 @@
       padding: 10px;
       font-size: 18px;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin: 10px;
-    }
     select {
       padding: 8px;
       font-size: 16px;
@@ -96,6 +91,7 @@ function next() {
       alert("오답 복습 시작!");
     } else {
       document.getElementById("result").innerText = "🎉 다 외웠다!";
+      document.getElementById("progress").innerText = "";
       return;
     }
   }
@@ -107,8 +103,10 @@ function next() {
 
   document.getElementById("answer").value = "";
   document.getElementById("result").innerText = "";
+
+  // 🔥 번호 + 진행도 표시 (추가된 핵심 기능)
   document.getElementById("progress").innerText =
-    (index+1) + " / " + list.length;
+    "No." + currentId + " (" + (index+1) + " / " + list.length + ")";
 
   document.getElementById("answer").focus();
 }
@@ -140,7 +138,7 @@ async function check() {
   setTimeout(next, 800);
 }
 
-// 처음 시작
+// 시작
 startGame();
 </script>
 
