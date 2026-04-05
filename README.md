@@ -49,8 +49,10 @@
 <img id="img">
 <br>
 
-<input id="answer" placeholder="이름 입력">
+<!-- 🔥 여기 수정됨 -->
+<input id="answer" placeholder="이름 입력" onkeydown="handleKey(event)">
 <br>
+
 <button onclick="check()">확인</button>
 
 <p id="result"></p>
@@ -85,6 +87,13 @@ function newPokemon() {
 
   document.getElementById("answer").value = "";
   document.getElementById("result").innerText = "";
+}
+
+// 🔥 엔터키 처리 함수 추가
+function handleKey(e) {
+  if (e.key === "Enter") {
+    check();
+  }
 }
 
 // 한글 이름 가져오기
