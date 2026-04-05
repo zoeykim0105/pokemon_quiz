@@ -49,8 +49,11 @@
 <img id="img">
 <br>
 
-<!-- 🔥 여기 수정됨 -->
-<input id="answer" placeholder="이름 입력" onkeydown="handleKey(event)">
+<!-- 🔥 모바일 엔터까지 해결된 입력창 -->
+<form onsubmit="submitAnswer(event)">
+  <input id="answer" placeholder="이름 입력" onkeydown="handleKey(event)" autofocus>
+</form>
+
 <br>
 
 <button onclick="check()">확인</button>
@@ -75,7 +78,6 @@ const genRange = {
 function getRandomId() {
   const gen = document.getElementById("gen").value;
   const [min, max] = genRange[gen];
-
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
@@ -87,20 +89,28 @@ function newPokemon() {
 
   document.getElementById("answer").value = "";
   document.getElementById("result").innerText = "";
+
+  // 🔥 다음 문제 때 자동 커서
+  document.getElementById("answer").focus();
 }
 
-// 🔥 엔터키 처리 함수 추가
+// 🔥 컴퓨터 엔터
 function handleKey(e) {
   if (e.key === "Enter") {
     check();
   }
 }
 
+// 🔥 모바일 엔터 (핵심)
+function submitAnswer(e) {
+  e.preventDefault();
+  check();
+}
+
 // 한글 이름 가져오기
 async function getKoreanName(id) {
   const res = await fetch("https://pokeapi.co/api/v2/pokemon-species/" + id);
   const data = await res.json();
-
   const ko = data.names.find(n => n.language.name === "ko");
   return ko.name;
 }
